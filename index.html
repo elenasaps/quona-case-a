@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Africa Fintech Sourcing Tool — Quona Case A</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F5F0;
+    --surface: #FFFFFF;
+    --border: #E2DDD6;
+    --border-strong: #C8C2B8;
+    --text: #1A1814;
+    --text-muted: #7A756C;
+    --text-faint: #B0AB9F;
+    --green: #2D6A4F;
+    --green-light: #D8EDDF;
+    --green-mid: #74C69D;
+    --amber: #8B5E00;
+    --amber-light: #FEF3C7;
+    --red: #9B1C1C;
+    --red-light: #FDE8E8;
+    --purple: #4C1D95;
+    --purple-light: #EDE9FE;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  header {
+    background: var(--text);
+    color: #F7F5F0;
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  header h1 { font-size: 15px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
+  header .sub { font-family: 'DM Mono', monospace; font-size: 11px; color: #9A9589; margin-top: 2px; }
+  header .badge { font-family: 'DM Mono', monospace; font-size: 11px; background: var(--green); color: #D8EDDF; padding: 4px 10px; border-radius: 4px; letter-spacing: 0.05em; }
+
+  .main { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+
+  .tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 2rem; }
+  .tab { font-size: 13px; font-weight: 500; padding: 10px 20px; cursor: pointer; color: var(--text-muted); border-bottom: 2px solid transparent; margin-bottom: -1px; letter-spacing: 0.02em; transition: color 0.15s; }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--text); border-bottom-color: var(--text); }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem 1.5rem; margin-bottom: 1rem; }
+  .card-title { font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 1rem; }
+
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; }
+  .stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 6px; }
+  .stat-value { font-family: 'DM Mono', monospace; font-size: 26px; font-weight: 500; color: var(--text); }
+
+  .filter-row { display: flex; gap: 10px; margin-bottom: 1.25rem; flex-wrap: wrap; align-items: center; }
+
+  select, input[type="text"], input[type="number"] {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 7px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  select:focus, input:focus { border-color: var(--border-strong); }
+
+  .btn { font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; padding: 7px 16px; border: 1px solid var(--border); border-radius: 6px; background: transparent; color: var(--text); cursor: pointer; transition: background 0.15s; }
+  .btn:hover { background: var(--bg); }
+  .btn-primary { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .btn-primary:hover { background: #333; }
+  .btn-primary:disabled { background: var(--text-faint); border-color: var(--text-faint); cursor: not-allowed; }
+
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); padding: 10px 12px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top; font-size: 13px; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg); }
+
+  .score-pill { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; padding: 3px 9px; border-radius: 20px; display: inline-block; }
+  .score-high { background: var(--green-light); color: var(--green); }
+  .score-mid { background: var(--amber-light); color: var(--amber); }
+  .score-low { background: var(--red-light); color: var(--red); }
+
+  .tag { display: inline-block; font-size: 11px; padding: 2px 7px; border-radius: 4px; margin: 2px 2px 2px 0; background: var(--purple-light); color: var(--purple); font-weight: 500; }
+
+  .company-name { font-weight: 500; font-size: 14px; }
+  .company-note { font-size: 12px; color: var(--text-muted); margin-top: 3px; line-height: 1.4; }
+
+  .weight-row { display: flex; align-items: center; gap: 14px; margin-bottom: 1rem; }
+  .weight-label { font-size: 13px; color: var(--text); width: 180px; flex-shrink: 0; }
+
+  input[type="range"] {
+    -webkit-appearance: none; appearance: none;
+    width: 180px; height: 4px;
+    background: var(--border); border-radius: 2px; outline: none; flex-shrink: 0;
+  }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--text); cursor: pointer; }
+
+  .weight-val { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; width: 36px; text-align: right; color: var(--text); }
+  .weight-total { font-size: 12px; color: var(--text-muted); margin-top: 0.5rem; padding-top: 0.75rem; border-top: 1px solid var(--border); }
+  .weight-total span { font-weight: 500; color: var(--text); font-family: 'DM Mono', monospace; }
+
+  .rank-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem 1.5rem; margin-bottom: 0.75rem; display: flex; gap: 1.25rem; align-items: flex-start; transition: border-color 0.15s; }
+  .rank-card:hover { border-color: var(--border-strong); }
+  .rank-card.top { border-color: var(--green); border-width: 1.5px; }
+  .rank-num { font-family: 'DM Mono', monospace; font-size: 22px; font-weight: 500; color: var(--text-faint); width: 32px; flex-shrink: 0; padding-top: 2px; }
+  .rank-num.gold { color: var(--green); }
+  .rank-body { flex: 1; min-width: 0; }
+  .rank-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
+  .rank-name { font-size: 15px; font-weight: 500; }
+  .rank-meta { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+  .score-bars { display: flex; gap: 16px; flex-wrap: wrap; }
+  .score-bar-item { display: flex; flex-direction: column; gap: 3px; }
+  .score-bar-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+  .bar-track { height: 4px; background: var(--bg); border-radius: 2px; width: 80px; }
+  .bar-fill { height: 4px; border-radius: 2px; background: var(--green-mid); }
+  .score-bar-val { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); }
+
+  .syndicate-def { background: var(--bg); border-left: 3px solid var(--green); padding: 1rem 1.25rem; border-radius: 0 6px 6px 0; margin-bottom: 1rem; }
+  .syndicate-def p { font-size: 13px; line-height: 1.7; color: var(--text); }
+
+  .investor-row { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .investor-row:last-child { border-bottom: none; }
+  .investor-name { font-weight: 500; width: 160px; flex-shrink: 0; }
+  .investor-reason { color: var(--text-muted); line-height: 1.5; }
+
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--surface); border-radius: 10px; padding: 2rem; width: 560px; max-width: 90vw; max-height: 85vh; overflow-y: auto; }
+  .modal h2 { font-size: 16px; font-weight: 500; margin-bottom: 1.5rem; }
+
+  .form-group { margin-bottom: 1rem; }
+  .form-label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 5px; display: block; }
+  .form-input { width: 100%; font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text); outline: none; }
+  .form-input:focus { border-color: var(--border-strong); }
+
+  .score-inputs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+  .score-input-group { display: flex; flex-direction: column; gap: 4px; }
+  .score-input-label { font-size: 11px; color: var(--text-muted); text-align: center; }
+  .score-input-field { text-align: center; font-family: 'DM Mono', monospace; }
+
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 1.5rem; }
+
+  .status-bar { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green-mid); flex-shrink: 0; }
+  .status-dot.loading { background: var(--amber); animation: pulse 1s infinite; }
+  .status-dot.error { background: var(--red); }
+
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  .empty-state { text-align: center; padding: 3rem; color: var(--text-muted); font-size: 13px; }
+
+  @media (max-width: 700px) {
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .main { padding: 1rem; }
+    header { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Africa Fintech Sourcing Tool</h1>
+    <div class="sub">Quona Capital · Case A · Summer Associate 2026</div>
+  </div>
+  <div class="badge">CONFIDENTIAL</div>
+</header>
+
+<div class="main">
+
+  <!-- CONFIG BANNER — shown only if script URL not set -->
+  <div id="config-banner" class="card" style="border-color: #EF9F27; background: #FAEEDA; display:none;">
+    <div style="display:flex; align-items:flex-start; gap:12px;">
+      <div style="flex:1;">
+        <div style="font-weight:500; font-size:13px; color:#633806; margin-bottom:6px;">Setup required — connect your Google Sheet</div>
+        <div style="font-size:12px; color:#854F0B; margin-bottom:10px;">Paste your Google Apps Script deployment URL below to enable live data sync. See the setup instructions file for how to get this URL.</div>
+        <div style="display:flex; gap:8px;">
+          <input type="text" id="script-url-input" placeholder="https://script.google.com/macros/s/YOUR_ID/exec" style="flex:1; font-size:12px; padding:6px 10px;">
+          <button class="btn btn-primary" onclick="saveScriptUrl()" style="font-size:12px; padding:6px 14px;">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('database')">Database</div>
+    <div class="tab" onclick="showTab('weights')">Scoring weights</div>
+    <div class="tab" onclick="showTab('rankings')">Rankings</div>
+    <div class="tab" onclick="showTab('syndicate')">Syndicate definition</div>
+  </div>
+
+  <!-- DATABASE TAB -->
+  <div id="tab-database" class="panel active">
+    <div class="card" style="margin-bottom:1.5rem;background:var(--bg);border-color:var(--border);">
+      <p style="font-size:13px;color:var(--text-muted);line-height:1.7;">This tool is connected to a live Google Sheet that serves as the master database. Companies added or edited directly in the Sheet appear here automatically on refresh — use the <strong style="color:var(--text);font-weight:500;">Refresh data</strong> button to pull the latest. You can also add a company directly through this interface using the <strong style="color:var(--text);font-weight:500;">+ Add company</strong> button, which writes to the Sheet in real time. Scores update the Rankings tab instantly as you adjust weights. The Sheet URL is: <a href="https://docs.google.com/spreadsheets/d/1AioqL5ikTjxgegaKwKIpr9jbEEEGWb9Mn4PlMaCGYXg/edit?usp=sharing" style="color:var(--green);text-decoration:none;" target="_blank">open the Google Sheet directly</a> to edit companies, add rows, or update scores.</p>
+      <p style="font-size:11px;color:var(--text-faint);margin-top:6px;">Last updated: March 2026</p>
+    </div>
+    <div class="stats-row">
+      <div class="stat"><div class="stat-label">Companies tracked</div><div class="stat-value" id="s-count">—</div></div>
+      <div class="stat"><div class="stat-label">South Africa</div><div class="stat-value" id="s-sa">—</div></div>
+      <div class="stat"><div class="stat-label">Egypt</div><div class="stat-value" id="s-eg">—</div></div>
+      <div class="stat"><div class="stat-label">Multi-market</div><div class="stat-value" id="s-mm">—</div></div>
+    </div>
+
+    <div class="filter-row">
+      <select id="f-geo" onchange="renderTable()">
+        <option value="">All geographies</option>
+        <option value="South Africa">South Africa</option>
+        <option value="Egypt">Egypt</option>
+        <option value="Multi-market">Multi-market</option>
+      </select>
+      <select id="f-sector" onchange="renderTable()">
+        <option value="">All sectors</option>
+        <option value="Payments">Payments</option>
+        <option value="Lending">Lending</option>
+        <option value="Embedded finance">Embedded finance</option>
+        <option value="Financial infrastructure">Financial infrastructure</option>
+        <option value="Trade finance">Trade finance</option>
+      </select>
+      <select id="f-sort" onchange="renderTable()">
+        <option value="score">Sort by score</option>
+        <option value="name">Sort by name</option>
+      </select>
+      <div style="margin-left:auto; display:flex; align-items:center; gap:12px;">
+        <div class="status-bar"><div class="status-dot" id="status-dot"></div><span id="status-text">Loading...</span></div>
+        <button class="btn" onclick="loadCompanies()" style="font-size:12px; padding:5px 12px;">Refresh</button>
+        <button class="btn btn-primary" onclick="openModal()">+ Add company</button>
+      </div>
+    </div>
+
+    <div class="card" style="padding: 0; overflow: hidden;">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:180px;">Company</th>
+            <th style="width:140px;">Sector</th>
+            <th style="width:110px;">Geography</th>
+            <th style="width:100px;">Seed round</th>
+            <th>Key investors</th>
+            <th style="width:60px; text-align:center;">Fit</th>
+            <th style="width:70px; text-align:center;">Score</th>
+          </tr>
+        </thead>
+        <tbody id="table-body">
+          <tr><td colspan="6"><div class="empty-state">Loading companies...</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- WEIGHTS TAB -->
+  <div id="tab-weights" class="panel">
+
+    <div class="card" style="border-left: 3px solid var(--green); border-radius: 0 8px 8px 0;">
+      <div class="card-title">Shortlist framework — from 20 companies to 2–3 picks</div>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:1.25rem;">This tab documents the three-stage process used to arrive at the final shortlist. The scoring weights below are not arbitrary — each reflects a deliberate judgment about what matters most when pre-empting a Series A in African fintech.</p>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:1.25rem;">
+        <div style="background:var(--bg);border-radius:6px;padding:0.85rem;">
+          <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--green);margin-bottom:6px;font-weight:500;">Stage 1 — Hard filter</div>
+          <div style="font-size:12px;color:var(--text-muted);line-height:1.6;">Remove companies where conviction is impossible from public data alone. Three triggers: traction = 3 with no compensating signal; syndicate score &lt; 5; Low confidence with no independent verification. <strong style="color:var(--text);font-weight:500;">Removed:</strong> Earnipay, MoneyHash. <strong style="color:var(--text);font-weight:500;">Watchlist:</strong> LittleFish. 17 companies advance.</div>
+        </div>
+        <div style="background:var(--bg);border-radius:6px;padding:0.85rem;">
+          <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--green);margin-bottom:6px;font-weight:500;">Stage 2 — Weighted score</div>
+          <div style="font-size:12px;color:var(--text-muted);line-height:1.6;">Five criteria weighted to reflect what matters at seed stage. <strong style="color:var(--text);font-weight:500;">Traction 25%</strong> — hardest to fake. <strong style="color:var(--text);font-weight:500;">Market 22%</strong> — inclusion thesis needs large TAMs. <strong style="color:var(--text);font-weight:500;">Moat 20%</strong> — defensibility at pre-emption. <strong style="color:var(--text);font-weight:500;">Founder 18%</strong> — public data often limited. <strong style="color:var(--text);font-weight:500;">Syndicate 15%</strong> — already used as hard filter. Sensitivity tested across 4 configurations — top 3 stable.</div>
+        </div>
+        <div style="background:var(--bg);border-radius:6px;padding:0.85rem;">
+          <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--green);margin-bottom:6px;font-weight:500;">Stage 3 — Qualitative overlay</div>
+          <div style="font-size:12px;color:var(--text-muted);line-height:1.6;">Four questions scores cannot answer: Is the moat regulatory (structural) or execution-based (replicable)? Is timing right for pre-emption? Does the founder have an irreplaceable advantage? Does this fill a gap in Quona's existing portfolio? Zone holds the top position on all four qualitative tests. Shekel Mobility is #2 on verified traction. Revio is #3 on market reach and syndicate quality. Note: enza removed — Quona is an existing investor. Connect Money removed — Series A already closed, fails Filter 3.</div>
+        </div>
+      </div>
+      <div style="background:var(--green-light);border-radius:6px;padding:0.85rem;display:flex;gap:16px;align-items:flex-start;">
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--green);font-weight:500;white-space:nowrap;padding-top:1px;">Final picks</div>
+        <div style="font-size:12px;color:var(--text);line-height:1.6;"><strong style="font-weight:500;">#1 Zone</strong> — CBN licence + blockchain-native architecture; ₦1T processed, 12+ banks live on $8.5M seed (score 84). &nbsp;<strong style="font-weight:500;">#2 Shekel Mobility</strong> — Prior exit (Eazypapers), ARR >$2M, 0% default rate, verified traction efficiency (score 73). &nbsp;<strong style="font-weight:500;">#3 Revio</strong> — 1,000% YoY revenue growth, 25+ African markets, Partech (T1) + QED (T2) syndicate (score 71). Note: Connect Money removed — Series A closed September 2024, fails Filter 3. SAVA considered for #3 but Revio scores higher under the framework as defined.</div>
+      </div>
+      
+    </div>
+
+    <div class="card">
+      <div class="card-title">Adjust scoring weights</div>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:1.5rem;">Drag sliders to adjust how much each criterion contributes to the final score. Rankings update automatically. Weights should total 100.</p>
+      <div id="weight-controls"></div>
+      <div class="weight-total">Total weight: <span id="w-total">100</span> / 100</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Sensitivity check</div>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:1rem;">Apply a preset weight configuration and see how rankings shift. If your top picks stay consistent across all three, your conviction is real — not an artefact of the weights.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn" onclick="applyPreset('default')">Default weights</button>
+        <button class="btn" onclick="applyPreset('traction')">Traction-heavy</button>
+        <button class="btn" onclick="applyPreset('market')">Market-heavy</button>
+        <button class="btn" onclick="applyPreset('moat')">Moat-heavy</button>
+      </div>
+      <div id="preset-label" style="font-size:12px;color:var(--text-muted);margin-top:0.75rem;"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Scoring anchors — what each score means</div>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:1.25rem;">Score every company against these anchors before applying weights. Anchors are set before research begins so scores don't drift based on the order you look at companies.</p>
+
+      <div style="margin-bottom:1.5rem;">
+        <div style="font-weight:500;font-size:13px;margin-bottom:0.75rem;">Market size</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+          <div style="background:var(--red-light);border-radius:6px;padding:0.75rem;">
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--red);margin-bottom:4px;">1–3 · Niche</div>
+            <div style="font-size:12px;color:var(--text-muted);line-height:1.5;">Geographically or demographically constrained. Unlikely to support a Series A valuation without significant expansion assumptions.</div>
+          </div>
+          <div style="background:var(--amber-light);border-radius:6px;padding:0.75rem;">
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--amber);margin-bottom:4px;">4–6 · Real but bounded</div>
+            <div style="font-size:12px;color:var(--text-muted);line-height:1.5;">Meaningful market in one country or segment. Credible path to scale but requires expansion to justify venture returns.</div>
+          </div>
+          <div style="background:var(--green-light);border-radius:6px;padding:0.75rem;">
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--green);margin-bottom:4px;">7–10 · Large &amp; addressable</div>
+            <div style="font-size:12px;color:var(--text-muted);line-height:1.5;">Even 1% penetration produces a large business. Think payments infrastructure across 4+ markets, or SME lending in Egypt where 90%+ of businesses are underserved.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:1.5rem;">
+        <div style="font-weight:500;font-size:13px;margin-bottom:0.75rem;">Traction efficiency <span style="font-weight:400;color:var(--text-muted);font-size:12px;">— users or customers ÷ total capital raised</span></div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+          <div style="background:var(--red-light);border-radius:6px;padding:0.75rem;">
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--red);margin-bottom:4px;">1–3 · Bottom third</div>
+            <div style="font-size:12px;color:var(--text-muted);line-height:1.5;">High capital deployed relative to traction achieved. Rank all companies by this ratio — bottom third score here.</div>
+          </div>
+          <div style="background:var(--amber-light);border-radius:6px;padding:0.75rem;">
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--amber);margin-bottom:4px;">4–7 · Middle third</div>
+            <div style="font-size:12px;color:var(--text-muted);line-height:1.5;">Reasonable efficiency. Capital deployment and traction broadly in line with peers in the database.</div>
+          </div>
+          <div style="background:var(--green-light);border-radius:6px;padding:0.75rem;">
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--green);margin-bottom:4px;">8–10 · Top third</div>
+            <div style="font-size:12px;color:var(--text-muted);line-height:1.5;">Doing a lot with a little. Traction clearly outpaces capital deployed relative to peers. Score this mechanically — it's the most objective criterion.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:1.5rem;">
+        <div style="font-weight:500;font-size:13px;margin-bottom:0.75rem;">Founder-market fit <span style="font-weight:400;color:var(--text-muted);font-size:12px;">— assessed via LinkedIn</span></div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+          <div style="background:var(--red-light);border-radius:6px;padding:0.75rem;">
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--red);margin-bottom:4px;">1–3 · Generalist</div>
+            <div style="font-size:12px;color:var(--text-muted);line-height:1.5;">No obvious connection to the problem, sector, or geography. Could be executing any startup.</div>
+          </div>
+          <div style="background:var(--amber-light);border-radius:6px;padding:0.75rem;">
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--amber);margin-bottom:4px;">4–6 · Adjacent</div>
+            <div style="font-size:12px;color:var(--text-muted);line-height:1.5;">Fintech in a different market, or relevant sector in the same geography. Credible but not an obvious insider.</div>
+          </div>
+          <div style="background:var(--green-light);border-radius:6px;padding:0.75rem;">
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--green);margin-bottom:4px;">7–10 · Earned insight</div>
+            <div style="font-size:12px;color:var(--text-muted);line-height:1.5;">Previously worked in financial services in this specific market, or built and exited a relevant company. Has regulatory relationships or distribution advantages others don't.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:1.5rem;">
+        <div style="font-weight:500;font-size:13px;margin-bottom:0.75rem;">Competitive moat</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+          <div style="background:var(--red-light);border-radius:6px;padding:0.75rem;">
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--red);margin-bottom:4px;">1–3 · Replicable</div>
+            <div style="font-size:12px;color:var(--text-muted);line-height:1.5;">Product could be copied in 6 months with enough capital. No evidence of structural advantage. Default score if no public evidence found: 3.</div>
+          </div>
+          <div style="background:var(--amber-light);border-radius:6px;padding:0.75rem;">
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--amber);margin-bottom:4px;">4–6 · Soft advantage</div>
+            <div style="font-size:12px;color:var(--text-muted);line-height:1.5;">Technical lead or brand that could erode with sufficient competitor capital. Takes time to replicate but not structurally protected.</div>
+          </div>
+          <div style="background:var(--green-light);border-radius:6px;padding:0.75rem;">
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--green);margin-bottom:4px;">7–10 · Structural</div>
+            <div style="font-size:12px;color:var(--text-muted);line-height:1.5;">Named, verifiable regulatory licence, proprietary data asset, or deeply embedded distribution partnership. Something that takes years to build.</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-weight:500;font-size:13px;margin-bottom:0.75rem;">Syndicate quality <span style="font-weight:400;color:var(--text-muted);font-size:12px;">— scored mechanically against the qualifying investors list</span></div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+          <div style="background:var(--red-light);border-radius:6px;padding:0.75rem;">
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--red);margin-bottom:4px;">1–3 · No qualifying investors</div>
+            <div style="font-size:12px;color:var(--text-muted);line-height:1.5;">No investors from the defined qualifying list. Generalist or non-Africa-specialist backers only.</div>
+          </div>
+          <div style="background:var(--amber-light);border-radius:6px;padding:0.75rem;">
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--amber);margin-bottom:4px;">4–7 · One qualifying investor</div>
+            <div style="font-size:12px;color:var(--text-muted);line-height:1.5;">One qualifying investor present. Score 5–6 if not leading, 7 if leading the round.</div>
+          </div>
+          <div style="background:var(--green-light);border-radius:6px;padding:0.75rem;">
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--green);margin-bottom:4px;">8–10 · Strong syndicate</div>
+            <div style="font-size:12px;color:var(--text-muted);line-height:1.5;">Two or more qualifying investors, with at least one leading. Strong signal of ecosystem credibility and Series A pathway.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RANKINGS TAB -->
+  <div id="tab-rankings" class="panel">
+    <div id="rankings-list"></div>
+  </div>
+
+  <!-- SYNDICATE TAB -->
+  <div id="tab-syndicate" class="panel">
+    <div class="card">
+      <div class="card-title">Definition: what makes a syndicate "strong"</div>
+      <div class="syndicate-def">
+        <p>A strong syndicate in African fintech is one that brings more than capital. The core test: could this investor group meaningfully improve the company's odds of reaching Series A and beyond?</p>
+        <br>
+        <p>Four criteria must be met: (1) at least one investor with prior Africa-specific fintech portfolio companies, demonstrating they understand local regulatory environments; (2) demonstrated ability to participate in or facilitate a Series A, either through fund size or established relationships with Series A investors; (3) evidence of follow-on investment in winning portfolio companies; (4) network value in the relevant geography — relationships with central banks, distribution partners, or talent that the company can actually access.</p>
+        <br>
+        <p>Investors are scored on these four criteria (1–10 each) and tiered by average: <strong style="font-weight:500;">Tier 1 ≥ 7.5</strong>, <strong style="font-weight:500;">Tier 2 = 5.0–7.4</strong>, <strong style="font-weight:500;">Tier 3 &lt; 5.0</strong>. A strong syndicate requires at least one Tier 1 investor, or two or more Tier 2 investors with an average score above 6.5. Syndicate quality scores in the database reflect this logic directly.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Tier 1 investors — avg score ≥ 7.5</div>
+      <div class="investor-row"><div class="investor-name">TLcom Capital</div><div class="investor-reason">Avg 8.8. Africa-focused VC, $154M Fund II, explicit Seed/Series A mandate, documented follow-on behaviour, Lagos/Nairobi offices.</div></div>
+      <div class="investor-row"><div class="investor-name">Partech Africa</div><div class="investor-reason">Avg 8.5. $300M+ Fund II, Seed→Series C range, on-the-ground offices across continent, strong Series A bridging track record.</div></div>
+      <div class="investor-row"><div class="investor-name">Quona Capital</div><div class="investor-reason">Avg 7.8. Emerging-markets fintech specialist, $332M Fund III, explicit follow-on reserves, global-local operating model.</div></div>
+      <div class="investor-row"><div class="investor-name">Norrsken22</div><div class="investor-reason">Avg 7.8. $205M fund, Series A/B anchor with large check capacity, stated follow-on reserves, teams across Nigeria/SA/Kenya/Ghana.</div></div>
+      <div class="investor-row"><div class="investor-name">Algebra Ventures</div><div class="investor-reason">Avg 7.5. Egypt-based, Series A/B sweet spot, $100M fund, deep Cairo operator networks, strong DFI LP base.</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Tier 2 investors — avg score 5.0–7.4 (selected)</div>
+      <div class="investor-row"><div class="investor-name">Ventures Platform</div><div class="investor-reason">Avg 7.3. Explicitly catalyses Series A, IFC/Standard Bank/BII/Proparco LPs, strong enterprise and regulator adjacency.</div></div>
+      <div class="investor-row"><div class="investor-name">4DX Ventures</div><div class="investor-reason">Avg 7.3. Pan-Africa, IFC-backed, Accra/Cairo/Nairobi presence, fintech among focus sectors.</div></div>
+      <div class="investor-row"><div class="investor-name">Enza Capital</div><div class="investor-reason">Avg 7.3. Multi-stage pre-seed→Series B, evergreen vehicle, explicit lifecycle follow-on commitment.</div></div>
+      <div class="investor-row"><div class="investor-name">Novastar Ventures</div><div class="investor-reason">Avg 7.0. ~$200M AUM, Nairobi/Lagos offices, multi-fund platform with follow-on capacity.</div></div>
+      <div class="investor-row"><div class="investor-name">Verod-Kepple Africa Ventures</div><div class="investor-reason">Avg 7.0. Explicit Series A/B strategy, $60M fund, Japan corporate LP network, documented follow-on ability.</div></div>
+      <div class="investor-row"><div class="investor-name">QED Investors</div><div class="investor-reason">Avg 7.0. Global fintech specialist, dedicated Africa partner, large AUM supports Series A syndication.</div></div>
+      <div class="investor-row"><div class="investor-name">Seedstars</div><div class="investor-reason">Avg 7.0. Seed/Series A Africa fund, up to $5M follow-ons stated, offices Nairobi/Dakar/Paris, 25+ country network.</div></div>
+      <div class="investor-row"><div class="investor-name">Orange Ventures</div><div class="investor-reason">Avg 7.0. MEA-dedicated fund, Series A+ support stream, Orange telecom distribution network is a strong partnership signal.</div></div>
+      <div class="investor-row"><div class="investor-name">Flourish Ventures</div><div class="investor-reason">Avg 6.5. Global fintech, Africa Madica pre-seed platform, crowd-in follow-on strategy, strong mentorship network.</div></div>
+      <div class="investor-row"><div class="investor-name">4Di Capital</div><div class="investor-reason">Avg 6.5. South Africa's most active early-stage fund, deep SA regulatory relationships, multi-geography footprint.</div></div>
+      <div class="investor-row"><div class="investor-name">GreenHouse Capital</div><div class="investor-reason">Avg 6.5. Nigeria-anchored, fintech portfolio, explicit ecosystem introductions and partnership support.</div></div>
+      <div class="investor-row"><div class="investor-name">Oui Capital</div><div class="investor-reason">Avg 6.5. Returned first fund via Moniepoint exit, strong fintech track record, founder-cited advisory value.</div></div>
+      <div class="investor-row"><div class="investor-name">Shorooq Partners</div><div class="investor-reason">Avg 6.3. $150M seed fund, MENA/Egypt focus, Seed→Series A staging, North Africa network transfers.</div></div>
+      <div class="investor-row"><div class="investor-name">Accion Venture Lab</div><div class="investor-reason">Avg 6.3. $61.6M Fund II, inclusive fintech mandate, Africa explicit, financial inclusion ecosystem network.</div></div>
+      <div class="investor-row"><div class="investor-name">Kepple Africa Ventures</div><div class="investor-reason">Avg 6.0. Pre-seed/seed Africa focus, VKAV pathway to Series A/B, Japan corporate partnership network.</div></div>
+      <div class="investor-row"><div class="investor-name">DisrupTech Ventures</div><div class="investor-reason">Avg 6.0. Egypt-focused, fintech specialisation, hands-on board involvement, strong local ecosystem centrality.</div></div>
+      <div class="investor-row"><div class="investor-name">Finca Ventures</div><div class="investor-reason">Avg 6.0. Sub-Saharan Africa focus, follow-on reserves stated, microfinance-scale market proximity.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD COMPANY MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <h2>Add company</h2>
+    <div class="form-group">
+      <label class="form-label">Company name</label>
+      <input class="form-input" id="f-name" type="text" placeholder="e.g. Stitch">
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+      <div class="form-group">
+        <label class="form-label">Sector</label>
+        <select class="form-input" id="f-sector-new">
+          <option>Payments</option>
+          <option>Lending</option>
+          <option>Embedded finance</option>
+          <option>Financial infrastructure</option>
+          <option>Trade finance</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Geography</label>
+        <select class="form-input" id="f-geo-new">
+          <option>South Africa</option>
+          <option>Egypt</option>
+          <option>Multi-market</option>
+        </select>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+      <div class="form-group">
+        <label class="form-label">Seed round</label>
+        <input class="form-input" id="f-seed" type="text" placeholder="e.g. $3M, 2023">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Investors (comma-separated)</label>
+        <input class="form-input" id="f-investors" type="text" placeholder="e.g. Partech, TLcom">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes</label>
+      <input class="form-input" id="f-note" type="text" placeholder="One-line description — what they do and why interesting">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Scores (1–10)</label>
+      <div class="score-inputs">
+        <div class="score-input-group"><div class="score-input-label">Market</div><input class="form-input score-input-field" id="sc-market" type="number" min="1" max="10" value="5"></div>
+        <div class="score-input-group"><div class="score-input-label">Traction</div><input class="form-input score-input-field" id="sc-traction" type="number" min="1" max="10" value="5"></div>
+        <div class="score-input-group"><div class="score-input-label">Founder</div><input class="form-input score-input-field" id="sc-founder" type="number" min="1" max="10" value="5"></div>
+        <div class="score-input-group"><div class="score-input-label">Moat</div><input class="form-input score-input-field" id="sc-moat" type="number" min="1" max="10" value="5"></div>
+        <div class="score-input-group"><div class="score-input-label">Syndicate</div><input class="form-input score-input-field" id="sc-syndicate" type="number" min="1" max="10" value="5"></div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" id="submit-btn" onclick="submitCompany()">Add company</button>
+    </div>
+    <div id="modal-status" style="font-size:12px;color:var(--text-muted);margin-top:0.75rem;text-align:right;"></div>
+  </div>
+</div>
+
+<script>
+// ─── PASTE YOUR APPS SCRIPT URL HERE after setup ───────────────────────
+let SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxIqwB8y-KPQgQ4syKnczKYAm3_zId1rq1crynyf8lzV4TQZpRBFuzoOxDffnFmgUJ4/exec';
+// ───────────────────────────────────────────────────────────────────────
+
+const SEED_DATA = [
+  { name: "Revio", sector: "Financial infrastructure", geo: "South Africa", seed: "$5.2M — Sep 2023", investors: ["QED Investors","Partech Africa","Speedinvest","Ralicap"], note: "Payment orchestration software connecting merchants to multiple PSPs; automates routing, retries, failover, and payment recovery.", scores: { market: 8, traction: 8, founder: 5, moat: 6, syndicate: 8 }, fit: "Exact", filter_note: "Meets all four filters on public evidence." },
+  { name: "enza", sector: "Financial infrastructure", geo: "Multi-market", seed: "$6.75M — Mar 2025", investors: ["Algebra Ventures","Quona Capital"], note: "Payments infrastructure for banks and fintechs spanning issuing, acceptance, cards, wallets, and real-time payments across 6 African markets.", scores: { market: 9, traction: 8, founder: 9, moat: 7, syndicate: 9 }, fit: "Removed", filter_note: "Quona Capital is a named seed investor — existing portfolio company. Excluded from shortlist consideration despite strong scores." },
+  { name: "Connect Money", sector: "Embedded finance", geo: "Egypt", seed: "$8.0M — Jun 2024", investors: ["Algebra Ventures","DisrupTech Ventures","Lorax Capital Partners","One Stop Capital"], note: "White-label card-issuing and BaaS platform letting non-bank businesses launch debit/credit and financing products.", scores: { market: 7, traction: 8, founder: 9, moat: 6, syndicate: 8 }, fit: "Removed", filter_note: "Fails Filter 3 — Series A closed September 2024 (Zaki Hashem legal advisory). Not pre-Series A at time of analysis." },
+  { name: "LittleFish", sector: "Embedded finance", geo: "South Africa", seed: "Undisclosed — Oct 2024", investors: ["TLcom Capital","Flourish Ventures"], note: "Digital infrastructure helping banks serve SMEs with payments, operations tooling, and access-to-credit capabilities.", scores: { market: 6, traction: 3, founder: 5, moat: 5, syndicate: 8 }, fit: "Exact", filter_note: "HQ South Africa satisfies Filter 2; seed size undisclosed publicly." },
+  { name: "Kuunda", sector: "Lending", geo: "South Africa", seed: "$2.25M — Jun 2022", investors: ["Accion Venture Lab","Finca Ventures","Kepple Africa Ventures","Mercy Corps Ventures"], note: "Lending-as-a-service embedding real-time working-capital and overdraft products via proprietary transactional scoring. $3B+ loans powered, 10M+ users.", scores: { market: 7, traction: 3, founder: 6, moat: 6, syndicate: 6 }, fit: "Exact", filter_note: "HQ South Africa; public follow-on was pre-Series A, not Series A." },
+  { name: "MNZL", sector: "Lending", geo: "Egypt", seed: "$3.5M — May 2024", investors: ["P1 Ventures","Localglobe","Ingressive Capital","500 Global"], note: "Asset-backed consumer lending platform letting home and car owners upload assets into a wallet and borrow against them.", scores: { market: 8, traction: 3, founder: 8, moat: 5, syndicate: 6 }, fit: "Exact", filter_note: "HQ Egypt satisfies Filter 2. No qualifying investors on syndicate list — flag for review." },
+  { name: "Socium", sector: "Embedded finance", geo: "Multi-market", seed: "$5.0M — Nov 2024", investors: ["Breega","Partech","Orange Ventures","Chui Ventures"], note: "Payroll and HR software for Francophone Africa. 100+ active clients across 15 countries and 10 industries.", scores: { market: 7, traction: 6, founder: 5, moat: 6, syndicate: 8 }, fit: "Exact", filter_note: "Fintech-adjacent: payroll is core and payment rails are integral to the workflow." },
+  { name: "Floatpays", sector: "Lending", geo: "South Africa", seed: "~$4.0M — Jan 2022", investors: ["Global Founders Capital","Base Capital","Finca Ventures","Raba Partnership"], note: "Earned-wage-access platform letting employees draw earned salary early, with linked savings and financial-wellness tools.", scores: { market: 6, traction: 6, founder: 5, moat: 4, syndicate: 6 }, fit: "Exact", filter_note: "HQ South Africa satisfies Filter 2. No qualifying investors — flag for review." },
+  { name: "Zone", sector: "Financial infrastructure", geo: "Multi-market", seed: "$8.5M — Mar 2024", investors: ["Flourish Ventures","TLcom Capital","Digital Currency Group","Verod-Kepple Africa Ventures"], note: "Licensed blockchain-enabled payments infrastructure connecting banks and fintechs for interoperable routing and settlement. 15+ major banks, 6,000+ ATMs.", scores: { market: 9, traction: 8, founder: 8, moat: 9, syndicate: 8 }, fit: "Edge", filter_note: "HQ Nigeria — not SA/Egypt, but operations clearly span >3 African markets." },
+  { name: "Earnipay", sector: "Lending", geo: "Multi-market", seed: "$4.0M — Feb 2022", investors: ["Canaan","XYZ Ventures","Village Global","Musha Ventures"], note: "Employer-linked earned-wage-access integrating with payroll/HR systems so employees can draw down earned salary.", scores: { market: 5, traction: 4, founder: 5, moat: 4, syndicate: 2 }, fit: "Edge", filter_note: "Geography borderline — only Nigeria operations clearly disclosed publicly." },
+  { name: "Maad", sector: "Trade finance", geo: "Multi-market", seed: "$3.2M — May 2024", investors: ["Ventures Platform","Seedstars International","Reflect Ventures","Oui Capital"], note: "Distribution platform for informal retailers extending working-capital/BNPL inventory financing. 6,500 active retailers, ~$3M monthly GMV, near breakeven.", scores: { market: 7, traction: 9, founder: 6, moat: 6, syndicate: 6 }, fit: "Edge", filter_note: "Borderline sector (trade finance via BNPL inventory credit) and geography (Senegal-first)." },
+  { name: "Shekel Mobility", sector: "Lending", geo: "Multi-market", seed: "$3.2M equity + debt — Nov 2023", investors: ["Ventures Platform","MaC Venture Capital","Y Combinator","Rebel Fund"], note: "Auto dealer marketplace and floor-plan financing platform. $56M+ transactions, 1,400 dealers, 0% default rate reported.", scores: { market: 7, traction: 8, founder: 8, moat: 7, syndicate: 6 }, fit: "Edge", filter_note: "Geography borderline — mainly Nigeria operations at time of round." },
+  { name: "MoneyHash", sector: "Financial infrastructure", geo: "Egypt", seed: "$4.5M — Feb 2024", investors: ["COTU Ventures","Sukna Ventures","RZM Investment","Tom Preston-Werner"], note: "Payment orchestration platform unifying pay-in, pay-out, routing, and billing across 300+ PSP integrations. 4x volume growth in prior year.", scores: { market: 7, traction: 7, founder: 5, moat: 6, syndicate: 2 }, fit: "Edge", filter_note: "Qualifying investor (Flourish) appeared at pre-Series A, not seed — borderline syndicate." },
+  { name: "Stitch", sector: "Financial infrastructure", geo: "South Africa", seed: "$21M — Feb 2022", investors: ["QED Investors","Norrsken22"], note: "API platform connecting businesses directly to bank rails for payments and financial data.", scores: { market: 9, traction: 6, founder: 6, moat: 6, syndicate: 8 }, fit: "Exact", filter_note: "HQ South Africa; strong qualifying syndicate." },
+  { name: "LipaLater", sector: "Embedded finance", geo: "Multi-market", seed: "$12M — 2022", investors: ["TLcom Capital","Novastar Ventures"], note: "BNPL platform underwriting consumers at checkout and paying merchants upfront. 500k+ customers reported.", scores: { market: 7, traction: 5, founder: 5, moat: 5, syndicate: 8 }, fit: "Exact", filter_note: "Kenya HQ but 3 African markets clearly evidenced: Kenya, Uganda, Rwanda." },
+  { name: "Workpay", sector: "Embedded finance", geo: "Multi-market", seed: "$2.7M — 2023", investors: ["Kepple Africa","Accion Venture Lab"], note: "Payroll SaaS with earned wage access and compliance tools. 1,000+ businesses served.", scores: { market: 7, traction: 7, founder: 6, moat: 6, syndicate: 6 }, fit: "Exact", filter_note: "Kenya HQ but 3 African markets evidenced: Kenya, Nigeria, Tanzania." },
+  { name: "Lami", sector: "Financial infrastructure", geo: "Multi-market", seed: "$3.7M — 2022", investors: ["Accion Venture Lab"], note: "Insurance API infrastructure enabling businesses to embed insurance products into their platforms.", scores: { market: 7, traction: 8, founder: 6, moat: 7, syndicate: 5 }, fit: "Exact", filter_note: "Kenya HQ but 3 African markets evidenced: Kenya, Nigeria, Uganda." },
+  { name: "SAVA", sector: "Financial infrastructure", geo: "Egypt", seed: "~$2M — 2023", investors: ["Algebra Ventures"], note: "Payment orchestration and merchant acquiring tools built by ex-Fawry founder — strong Egypt market insight.", scores: { market: 7, traction: 6, founder: 5, moat: 9, syndicate: 7 }, fit: "Exact", filter_note: "HQ Egypt satisfies Filter 2. Ex-Fawry founder gives strong founder-market fit signal." },
+  { name: "Blnk", sector: "Embedded finance", geo: "Egypt", seed: "$32M — 2023", investors: ["Norrsken22","Shorooq Partners"], note: "BNPL infrastructure enabling merchants to offer installment credit. 1,000+ merchants onboarded.", scores: { market: 7, traction: 4, founder: 5, moat: 6, syndicate: 8 }, fit: "Exact", filter_note: "$32M raise size is atypically large for seed — borderline Series A territory by raise size." },
+  { name: "Octane", sector: "Payments", geo: "Egypt", seed: "$5.2M — Jun 2025", investors: ["Shorooq Partners","Algebra Ventures","Elsewedy Capital"], note: "Closed-loop fleet payments wallet digitising fuel, maintenance, and petty-cash spend for enterprise fleets. 1,600 corporate clients, 250,000 vehicles. Ex-Careem founder.", scores: { market: 6, traction: 8, founder: 6, moat: 7, syndicate: 8 }, fit: "Edge", filter_note: "Seed raised Jun 2025 — 9 months prior to this analysis, technically outside the 1–3 year window. Included given strong founder-market fit (ex-Careem), Egypt HQ, and qualifying syndicate. Watch for Series A readiness Q3–Q4 2026." },
+];
+
+let companies = [...SEED_DATA];
+const weights = { market: 22, traction: 25, founder: 18, moat: 20, syndicate: 15 };
+const wLabels = { market: "Market size", traction: "Traction efficiency", founder: "Founder-market fit", moat: "Competitive moat", syndicate: "Syndicate quality" };
+
+function setStatus(state, text) {
+  const dot = document.getElementById('status-dot');
+  dot.className = 'status-dot' + (state === 'loading' ? ' loading' : state === 'error' ? ' error' : '');
+  document.getElementById('status-text').textContent = text;
+}
+
+async function loadCompanies() {
+  if (!SCRIPT_URL) {
+    document.getElementById('config-banner').style.display = 'block';
+    companies = [...SEED_DATA];
+    renderStats(); renderTable(); renderRankings();
+    setStatus('ok', `${companies.length} companies loaded from research · Connect Google Sheet to enable live adds`);
+    return;
+  }
+  setStatus('loading', 'Loading...');
+  try {
+    const res = await fetch(`${SCRIPT_URL}?action=get`);
+    const data = await res.json();
+    const live = data.companies || [];
+    companies = live.length ? live : [...SEED_DATA];
+    renderStats(); renderTable(); renderRankings();
+    setStatus('ok', `${companies.length} companies · Last refreshed ${new Date().toLocaleTimeString()}`);
+  } catch(e) {
+    companies = [...SEED_DATA];
+    renderStats(); renderTable(); renderRankings();
+    setStatus('error', 'Could not reach Google Sheet — showing research data');
+  }
+}
+
+function saveScriptUrl() {
+  const val = document.getElementById('script-url-input').value.trim();
+  if (!val) return;
+  SCRIPT_URL = val;
+  localStorage.setItem('script_url', val);
+  document.getElementById('config-banner').style.display = 'none';
+  loadCompanies();
+}
+
+function calcScore(c) {
+  return Math.round(
+    c.scores.market * weights.market / 10 +
+    c.scores.traction * weights.traction / 10 +
+    c.scores.founder * weights.founder / 10 +
+    c.scores.moat * weights.moat / 10 +
+    c.scores.syndicate * weights.syndicate / 10
+  );
+}
+
+function scorePill(s) {
+  const cls = s >= 70 ? 'score-high' : s >= 55 ? 'score-mid' : 'score-low';
+  return `<span class="score-pill ${cls}">${s}</span>`;
+}
+
+function renderStats() {
+  document.getElementById('s-count').textContent = companies.length;
+  document.getElementById('s-sa').textContent = companies.filter(c => c.geo === 'South Africa').length;
+  document.getElementById('s-eg').textContent = companies.filter(c => c.geo === 'Egypt').length;
+  document.getElementById('s-mm').textContent = companies.filter(c => c.geo === 'Multi-market').length;
+}
+
+function fitBadge(fit) {
+  if (fit === 'Exact') return '<span style="font-size:11px;font-weight:500;padding:2px 7px;border-radius:4px;background:var(--green-light);color:var(--green);">Exact</span>';
+  if (fit === 'Edge') return '<span style="font-size:11px;font-weight:500;padding:2px 7px;border-radius:4px;background:var(--amber-light);color:var(--amber);">Edge</span>';
+  if (fit === 'Removed') return '<span style="font-size:11px;font-weight:500;padding:2px 7px;border-radius:4px;background:var(--red-light);color:var(--red);">Removed</span>';
+  return '';
+}
+
+function renderTable() {
+  const geo = document.getElementById('f-geo').value;
+  const sector = document.getElementById('f-sector').value;
+  const sort = document.getElementById('f-sort').value;
+  let list = companies.filter(c => (!geo || c.geo === geo) && (!sector || c.sector === sector));
+  if (sort === 'score') list.sort((a,b) => calcScore(b) - calcScore(a));
+  else list.sort((a,b) => a.name.localeCompare(b.name));
+  if (!list.length) {
+    document.getElementById('table-body').innerHTML = '<tr><td colspan="6"><div class="empty-state">No companies match this filter.</div></td></tr>';
+    return;
+  }
+  document.getElementById('table-body').innerHTML = list.map(c => `
+    <tr>
+      <td><div class="company-name">${c.name}</div><div class="company-note">${(c.note||'').substring(0,80)}${(c.note||'').length>80?'...':''}</div></td>
+      <td>${c.sector}</td>
+      <td>${c.geo}</td>
+      <td>${c.seed}</td>
+      <td>${(c.investors||[]).map(i => `<span class="tag">${i}</span>`).join('')}</td>
+      <td style="text-align:center;">${fitBadge(c.fit)}</td>
+      <td style="text-align:center;">${scorePill(calcScore(c))}</td>
+    </tr>
+  `).join('');
+}
+
+function renderWeights() {
+  document.getElementById('weight-controls').innerHTML = Object.keys(weights).map(k => `
+    <div class="weight-row">
+      <span class="weight-label">${wLabels[k]}</span>
+      <input type="range" min="0" max="50" step="5" value="${weights[k]}" oninput="updateWeight('${k}',this.value)">
+      <span class="weight-val" id="wv-${k}">${weights[k]}%</span>
+    </div>
+  `).join('');
+}
+
+function updateWeight(k, v) {
+  weights[k] = parseInt(v);
+  document.getElementById(`wv-${k}`).textContent = v + '%';
+  document.getElementById('w-total').textContent = Object.values(weights).reduce((a,b)=>a+b,0);
+  renderTable();
+  renderRankings();
+}
+
+const presets = {
+  default:  { market: 22, traction: 25, founder: 18, moat: 20, syndicate: 15, label: "Default — balanced weights reflecting Quona's inclusion thesis" },
+  traction: { market: 15, traction: 40, founder: 18, moat: 17, syndicate: 10, label: "Traction-heavy — prioritises capital efficiency above all else" },
+  market:   { market: 35, traction: 20, founder: 18, moat: 17, syndicate: 10, label: "Market-heavy — prioritises total addressable opportunity" },
+  moat:     { market: 18, traction: 20, founder: 18, moat: 34, syndicate: 10, label: "Moat-heavy — prioritises structural competitive advantage" },
+};
+
+function applyPreset(name) {
+  const p = presets[name];
+  Object.keys(weights).forEach(k => { weights[k] = p[k]; });
+  renderWeights();
+  renderTable();
+  renderRankings();
+  document.getElementById('preset-label').textContent = p.label;
+}
+
+function renderRankings() {
+  const sorted = [...companies].filter(c => c.fit !== 'Removed').sort((a,b) => calcScore(b) - calcScore(a));
+  if (!sorted.length) { document.getElementById('rankings-list').innerHTML = '<div class="empty-state" style="padding:3rem;">No companies yet.</div>'; return; }
+  document.getElementById('rankings-list').innerHTML = sorted.map((c, i) => {
+    const s = calcScore(c);
+    return `
+    <div class="rank-card ${i===0?'top':''}">
+      <div class="rank-num ${i===0?'gold':''}">${String(i+1).padStart(2,'0')}</div>
+      <div class="rank-body">
+        <div class="rank-header">
+          <span class="rank-name">${c.name}</span>
+          ${scorePill(s)}
+          ${fitBadge(c.fit)}
+          <span style="font-size:12px;color:var(--text-muted);">${c.sector} · ${c.geo}</span>
+        </div>
+        <div class="rank-meta">${c.note||''}${c.filter_note ? '<br><span style="font-size:11px;color:var(--text-faint);">⚑ ' + c.filter_note + '</span>' : ''}</div>
+        <div class="score-bars">
+          ${Object.keys(c.scores).map(k => `
+            <div class="score-bar-item">
+              <div class="score-bar-label">${wLabels[k].split(' ')[0]}</div>
+              <div class="bar-track"><div class="bar-fill" style="width:${c.scores[k]*8}px"></div></div>
+              <div class="score-bar-val">${c.scores[k]}/10</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function showTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelector(`[onclick="showTab('${name}')"]`).classList.add('active');
+  document.getElementById(`tab-${name}`).classList.add('active');
+}
+
+function openModal() { document.getElementById('modal').classList.add('open'); document.getElementById('modal-status').textContent = ''; }
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function closeModalOutside(e) { if (e.target.id === 'modal') closeModal(); }
+
+async function submitCompany() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { document.getElementById('modal-status').textContent = 'Please enter a company name.'; return; }
+  if (!SCRIPT_URL) { document.getElementById('modal-status').textContent = 'Connect your Google Sheet first.'; return; }
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true; btn.textContent = 'Saving...';
+  document.getElementById('modal-status').textContent = '';
+
+  const company = {
+    name,
+    sector: document.getElementById('f-sector-new').value,
+    geo: document.getElementById('f-geo-new').value,
+    seed: document.getElementById('f-seed').value || '—',
+    investors: document.getElementById('f-investors').value.split(',').map(s=>s.trim()).filter(Boolean),
+    note: document.getElementById('f-note').value,
+    scores: {
+      market:    parseInt(document.getElementById('sc-market').value)||5,
+      traction:  parseInt(document.getElementById('sc-traction').value)||5,
+      founder:   parseInt(document.getElementById('sc-founder').value)||5,
+      moat:      parseInt(document.getElementById('sc-moat').value)||5,
+      syndicate: parseInt(document.getElementById('sc-syndicate').value)||5,
+    }
+  };
+
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'add', company }),
+    });
+    closeModal();
+    await loadCompanies();
+  } catch(e) {
+    document.getElementById('modal-status').textContent = 'Error saving — try again.';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Add company';
+  }
+}
+
+renderWeights();
+loadCompanies();
+</script>
+</body>
+</html>
